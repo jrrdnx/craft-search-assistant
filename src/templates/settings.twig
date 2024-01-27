@@ -1,0 +1,76 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
+ *
+ * Search Assistant Settings.twig
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2024 Jarrod D Nix
+ * @link      https://github.com/jrrdnx/craft-search-assistant
+ * @package   SearchAssistant
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{{ forms.lightswitchField({
+	label: 'enabled'|t('search-assistant'),
+	id: 'enabled',
+	name: 'enabled',
+	on: settings.enabled,
+    toggle: 'toggleSettings',
+	warning: (craft.app.config.getConfigFromFile('search-assistant')['enabled'] is defined ? 'overridden'|t('search-assistant', params = { name : 'enabled' }) : '')
+}) }}
+
+<div id="toggleSettings"{% if settings.enabled is not defined or not settings.enabled %} class="hidden"{% endif %}>
+    {{ forms.textField({
+        label: 'pluginName'|t('search-assistant'),
+        instructions: 'pluginNameInstructions'|t("search-assistant"),
+        id: 'pluginName',
+        name: 'pluginName',
+        value: settings.pluginName,
+        warning: (craft.app.config.getConfigFromFile('search-assistant')['pluginName'] is defined ? 'overridden'|t('search-assistant', params = { name : 'pluginName' }) : '')
+    }) }}
+
+    {{ forms.editableTableField({
+        label: 'ipIgnore'|t('search-assistant'),
+        instructions: 'ipIgnoreInstructions'|t("search-assistant"),
+        id: 'ipIgnore',
+        name: 'ipIgnore',
+        cols: [
+            {
+                type: 'text',
+                heading: 'ipCidrAddress'|t('search-assistant'),
+                placeholder: 'e.g. 192.168.1.1/24',
+                width: '25%'
+            },
+            {
+                type: 'text',
+                heading: 'note'|t('search-assistant'),
+                width: '75%'
+            }
+        ],
+        rows: settings.ipIgnore,
+        errors: settings.getErrors('ipIgnore'),
+        addRowLabel: 'addAnIpCidrAddress'|t('search-assistant'),
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        warning: (craft.app.config.getConfigFromFile('search-assistant')['ipIgnore'] is defined ? 'overridden'|t('search-assistant', params = { name : 'ipIgnore' }) : '')
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: 'ignoreCpUsers'|t('search-assistant'),
+        instructions: 'ignoreCpUsersInstructions'|t('search-assistant'),
+        id: 'ignoreCpUsers',
+        name: 'ignoreCpUsers',
+        on: settings.ignoreCpUsers,
+        warning: (craft.app.config.getConfigFromFile('search-assistant')['ignoreCpUsers'] is defined ? 'overridden'|t('search-assistant', params = { name : 'ignoreCpUsers' }) : '')
+    }) }}
+</div>
+
+<br />
+<br />
+<br />

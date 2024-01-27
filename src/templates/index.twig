@@ -1,0 +1,43 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
+ *
+ * Search Assistant index.twig
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2024 Jarrod D Nix
+ * @link      https://github.com/jrrdnx/craft-search-assistant
+ * @package   SearchAssistant
+ * @since     1.0.0
+ */
+#}
+
+{% requirePermission 'searchAssistant:viewFullHistory' %}
+
+{% extends "_layouts/elementindex" %}
+{% set elementType = 'jrrdnx\\searchassistant\\elements\\HistoryElement' %}
+
+{# {% do view.registerAssetBundle("jrrdnx\\searchassistant\\assetbundles\\SearchAssistantAsset") %} #}
+
+{# Link for the ? icon at the bottom of the page #}
+{% set docsUrl = "https://jarrodnix.dev/plugins/search-assistant/v1" %}
+
+{# The title of this CP section #}
+{% set title = pluginName %}
+
+{# The URL to this plugin's base CP section #}
+{% set pluginCpUrl = url('search-assistant') %}
+
+{# Get a URL to an image in our AssetBundle #}
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@jrrdnx/searchassistant/icon-mask.svg') %}
+
+{% set crumbs = [
+    { label: pluginName, url: url(pluginCpUrl) }
+] %}
+
+{% if source is defined %}
+    {% js %}
+        window.defaultSourceSlug = "{{ source|e('js') }}";
+    {% endjs %}
+{% endif %}

@@ -1,0 +1,33 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
+ *
+ * Recent Searches Widget Settings.twig
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2024 Jarrod D Nix
+ * @link      https://github.com/jrrdnx/craft-search-assistant
+ * @package   SearchAssistant
+ * @since     1.0.0
+ */
+#}
+
+{% do view.registerAssetBundle("jrrdnx\\searchassistant\\assetbundles\\SearchAssistantAsset") %}
+
+<table class="data">
+    <thead>
+        <tr>
+            <th>{{ 'keywords'|t('search-assistant') }}</th>
+            <th>{{ 'lastSearched'|t('search-assistant') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for search in recentSearches %}
+            <tr>
+                <td>{{ search.keywords }}</td>
+                <td>{{ search.lastSearched|date('F j, Y g:ia') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
