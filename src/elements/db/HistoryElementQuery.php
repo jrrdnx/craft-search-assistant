@@ -42,7 +42,7 @@ class HistoryElementQuery extends ElementQuery
         return $this;
     }
 
-    public function siteId($value): self
+    public function siteId($value): static
     {
         $this->siteId = $value;
 

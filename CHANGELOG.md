@@ -1,5 +1,10 @@
 # Release Notes for Search Assistant
 
+## 1.1.1 - 2024-02-10
+
+### Fixed
+- Fixed HistoryElementQuery PHP error for Craft v5
+
 ## 1.1.0 - 2024-02-10
 
 ### Changed
