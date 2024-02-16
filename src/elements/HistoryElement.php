@@ -8,6 +8,10 @@
 
 namespace jrrdnx\searchassistant\elements;
 
+use jrrdnx\searchassistant\elements\db\HistoryElementQuery;
+use jrrdnx\searchassistant\records\HistoryRecord;
+use jrrdnx\searchassistant\SearchAssistant;
+
 use Craft;
 use craft\base\Element;
 use craft\elements\actions\Restore;
@@ -16,9 +20,6 @@ use craft\elements\User;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use DateTime;
-use jrrdnx\searchassistant\elements\db\HistoryElementQuery;
-use jrrdnx\searchassistant\records\HistoryRecord;
-use jrrdnx\searchassistant\SearchAssistant;
 use yii\web\Response;
 
 /**

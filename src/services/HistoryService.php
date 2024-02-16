@@ -9,15 +9,17 @@
 namespace jrrdnx\searchassistant\services;
 
 use jrrdnx\searchassistant\SearchAssistant;
+use jrrdnx\searchassistant\elements\HistoryElement;
+use jrrdnx\searchassistant\records\HistoryRecord;
 
 use Craft;
 use craft\base\Component;
 use craft\db\Table;
 use craft\helpers\Db;
+use craft\search\SearchQueryTerm;
+use craft\search\SearchQueryTermGroup;
 use DateTime;
 use Dxw\CIDR\IP;
-use jrrdnx\searchassistant\elements\HistoryElement;
-use jrrdnx\searchassistant\records\HistoryRecord;
 
 /**
  * History Service
@@ -53,17 +55,27 @@ class HistoryService extends Component
             return;
         }
 
+        // Make sure we get just the search term
+        foreach($event->query->getTokens() as $token) {
+            if($token instanceof SearchQueryTerm) {
+                $keywords = $token->term;
+            } else
+            if($token instanceof SearchQueryTermGroup) {
+                $keywords = $token->terms[0]->term;
+            }
+        }
+
         $search = HistoryElement::find()
             ->siteId(Craft::$app->sites->getCurrentSite()->id)
             ->pageUrl(explode('?', Craft::$app->getRequest()->getUrl())[0])
-            ->keywords($event->query->getQuery())
+            ->keywords($keywords)
             ->one();
 
         if(!$search) {
             $search = new HistoryElement([
                 'siteId' => (int)Craft::$app->sites->getCurrentSite()->id,
                 'pageUrl' => (string)explode('?', Craft::$app->getRequest()->getUrl())[0],
-                'keywords' => (string)$event->query->getQuery(),
+                'keywords' => (string)$keywords,
                 'numResults' => (int)count($event->results),
                 'searchCount' => 1,
                 'lastSearched' => Db::prepareDateForDb(new DateTime())

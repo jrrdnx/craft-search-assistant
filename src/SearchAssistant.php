@@ -8,8 +8,13 @@
 
 namespace jrrdnx\searchassistant;
 
+use jrrdnx\searchassistant\elements\HistoryElement;
 use jrrdnx\searchassistant\models\SettingsModel;
+use jrrdnx\searchassistant\records\HistoryRecord;
 use jrrdnx\searchassistant\services\HistoryService;
+use jrrdnx\searchassistant\variables\CraftVariableBehavior;
+use jrrdnx\searchassistant\widgets\PopularSearchesWidget;
+use jrrdnx\searchassistant\widgets\RecentSearchesWidget;
 
 use Craft;
 use craft\base\Model;
@@ -30,11 +35,6 @@ use craft\services\Search;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
-use jrrdnx\searchassistant\elements\HistoryElement;
-use jrrdnx\searchassistant\records\HistoryRecord;
-use jrrdnx\searchassistant\variables\CraftVariableBehavior;
-use jrrdnx\searchassistant\widgets\PopularSearchesWidget;
-use jrrdnx\searchassistant\widgets\RecentSearchesWidget;
 use yii\base\Event;
 
 /**
@@ -100,7 +100,9 @@ class SearchAssistant extends Plugin
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
             function (PluginEvent $event) {
                 if ($event->plugin === $this) {
-                    Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('settings/plugins/search-assistant'))->send();
+                    if(!Craft::$app->getRequest()->getIsConsoleRequest()) {
+                        Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('settings/plugins/search-assistant'))->send();
+                    }
                 }
             }
         );

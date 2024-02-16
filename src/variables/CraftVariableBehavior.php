@@ -10,7 +10,6 @@ namespace jrrdnx\searchassistant\variables;
 
 use jrrdnx\searchassistant\SearchAssistant;
 
-use Craft;
 use yii\base\Behavior;
 
 /**
