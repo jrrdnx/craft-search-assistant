@@ -55,13 +55,15 @@ class HistoryService extends Component
             return;
         }
 
-        // Make sure we get just the search term
+        // Make sure we get the full search term and just the search term
+        $keywords = $event->query->getQuery();
         foreach($event->query->getTokens() as $token) {
-            if($token instanceof SearchQueryTerm) {
-                $keywords = $token->term;
-            } else
             if($token instanceof SearchQueryTermGroup) {
-                $keywords = $token->terms[0]->term;
+                foreach($token->terms as $term) {
+                    if($term->phrase) {
+                        $keywords = $term->term;
+                    }
+                }
             }
         }
 

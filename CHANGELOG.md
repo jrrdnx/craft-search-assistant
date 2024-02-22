@@ -1,5 +1,10 @@
 # Release Notes for Search Assistant
 
+## 1.1.3 - 2024-02-22
+
+### Fixed
+- Fixes an issue where only the last word of the search term was being tracked ([#2](https://github.com/jrrdnx/craft-search-assistant/issues/2))
+
 ## 1.1.2 - 2024-02-15
 
 ### Fixed
