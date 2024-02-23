@@ -52,7 +52,7 @@ class HistoryController extends Controller
     public function actionProVersionRequired()
     {
         return $this->renderTemplate(
-            'search-assistant/proVersionRequired',
+            'search-assistant/pro',
             [
                 'pluginName' => SearchAssistant::$plugin->getSettings()->getPluginName()
             ]
