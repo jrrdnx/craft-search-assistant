@@ -6,8 +6,10 @@
 
 namespace jrrdnx\searchassistant\migrations;
 
+use jrrdnx\searchassistant\elements\HistoryElement;
 use jrrdnx\searchassistant\records\HistoryRecord;
 
+use Craft;
 use craft\db\Migration;
 use craft\records\Element;
 
@@ -37,6 +39,13 @@ class Install extends Migration
      */
     public function safeDown(): bool
     {
+        // Delete all HistoryElement entries from `elements` table
+        $historyElements = HistoryElement::find()->all();
+        foreach($historyElements as $historyElement) {
+            Craft::$app->elements->deleteElement($historyElement);
+        }
+
+        // Drop table
         $this->dropTableIfExists(HistoryRecord::tableName());
 
         return true;
