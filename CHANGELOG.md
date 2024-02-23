@@ -1,5 +1,11 @@
 # Release Notes for Search Assistant
 
+## 1.1.4 - 2024-02-23
+
+### Fixed
+- Fixes template reference
+- Deletes all HistoryElement entries from `elements` table on uninstall
+
 ## 1.1.3 - 2024-02-22
 
 ### Fixed
