@@ -1,5 +1,10 @@
 # Release Notes for Search Assistant
 
+## 1.2.0 - 2025-05-31
+
+### Added
+- Adds GraphQL support
+
 ## 1.1.4 - 2024-02-23
 
 ### Fixed

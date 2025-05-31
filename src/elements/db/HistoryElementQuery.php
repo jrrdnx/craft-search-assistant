@@ -91,25 +91,32 @@ class HistoryElementQuery extends ElementQuery
         // JOIN our table
         $this->joinElementTable($table);
 
-        // SELECT the `pageUrl`, `keywords`, `numResults`, `searchCount`, and `lastSearched` columns
-        $this->query->select([
-            $table.'.pageUrl',
-            $table.'.keywords',
-            $table.'.numResults',
-            $table.'.searchCount',
-            $table.'.lastSearched'
-        ]);
-
-        if ($this->recentSearches) {
-            $this->query->orderBy([
-                'lastSearched' => SORT_DESC
-            ]);
-        }
-
         if ($this->popularSearches) {
-            $this->query->orderBy([
-                'searchCount' => SORT_DESC
+            // For popular searches, we need to group and aggregate
+            $this->query->select([
+                $table.'.keywords',
+                'SUM('.$table.'.searchCount) as searchCount',
+                'MAX('.$table.'.lastSearched) as lastSearched',
+                'MAX('.$table.'.pageUrl) as pageUrl',
+                'MAX('.$table.'.numResults) as numResults'
+            ])
+            ->groupBy([$table.'.keywords'])
+            ->orderBy(['searchCount' => SORT_DESC]);
+        } else {
+            // For other queries, select all fields normally
+            $this->query->select([
+                $table.'.pageUrl',
+                $table.'.keywords',
+                $table.'.numResults',
+                $table.'.searchCount',
+                $table.'.lastSearched'
             ]);
+
+            if ($this->recentSearches) {
+                $this->query->orderBy([
+                    'lastSearched' => SORT_DESC
+                ]);
+            }
         }
 
         if ($this->siteId) {

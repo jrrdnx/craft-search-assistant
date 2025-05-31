@@ -218,4 +218,9 @@ class HistoryElement extends Element
             ]
         ]);
     }
+
+    public static function gqlTypeName(): string
+    {
+        return 'Search';
+    }
 }

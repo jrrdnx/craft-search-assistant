@@ -9,9 +9,13 @@
 namespace jrrdnx\searchassistant;
 
 use jrrdnx\searchassistant\elements\HistoryElement;
+use jrrdnx\searchassistant\gql\GqlPermissions;
+use jrrdnx\searchassistant\gql\RegisterGqlTypes;
+use jrrdnx\searchassistant\gql\queries\SearchQueries;
 use jrrdnx\searchassistant\models\SettingsModel;
 use jrrdnx\searchassistant\records\HistoryRecord;
 use jrrdnx\searchassistant\services\HistoryService;
+use jrrdnx\searchassistant\services\Searches;
 use jrrdnx\searchassistant\variables\CraftVariableBehavior;
 use jrrdnx\searchassistant\widgets\PopularSearchesWidget;
 use jrrdnx\searchassistant\widgets\RecentSearchesWidget;
@@ -22,6 +26,8 @@ use craft\base\Plugin;
 use craft\events\DefineBehaviorsEvent;
 use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterGqlQueriesEvent;
+use craft\events\RegisterGqlTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\SearchEvent;
@@ -30,6 +36,7 @@ use craft\helpers\UrlHelper;
 use craft\services\Dashboard;
 use craft\services\Elements;
 use craft\services\Gc;
+use craft\services\Gql;
 use craft\services\Plugins;
 use craft\services\Search;
 use craft\services\UserPermissions;
@@ -80,45 +87,19 @@ class SearchAssistant extends Plugin
         ];
     }
 
-    public function init()
+    public function init(): void
     {
         if(Craft::$app->getRequest()->getIsConsoleRequest())
 		{
 			$this->controllerNamespace = 'jrrdnx\searchassistant\console\controllers';
 		}
 
-		parent::init();
+        parent::init();
         self::$plugin = $this;
 
         $this->setComponents([
 			'history' => HistoryService::class,
 		]);
-
-        // Redirect to plugin settings after we're installed
-        Event::on(
-            Plugins::class,
-            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
-                if ($event->plugin === $this) {
-                    if(!Craft::$app->getRequest()->getIsConsoleRequest()) {
-                        Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('settings/plugins/search-assistant'))->send();
-                    }
-                }
-            }
-        );
-
-        // Register our CP routes
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                if($this->is(self::EDITION_PRO)) {
-                    $event->rules['search-assistant'] = 'search-assistant/history/index';
-                } else {
-                    $event->rules['search-assistant'] = 'search-assistant/history/pro-version-required';
-                }
-            }
-        );
 
         // Register our elements
         Event::on(
@@ -128,6 +109,56 @@ class SearchAssistant extends Plugin
                 $event->types[] = HistoryElement::class;
             }
         );
+
+        // Initialize Pro features
+        if ($this->is(self::EDITION_PRO)) {
+            Craft::info('Initializing PRO features', __METHOD__);
+
+            // Register GQL permissions first
+            GqlPermissions::init();
+            Craft::info('GQL permissions registered', __METHOD__);
+
+            // Register GQL queries directly
+            Event::on(
+                Gql::class,
+                Gql::EVENT_REGISTER_GQL_QUERIES,
+                function(RegisterGqlQueriesEvent $event) {
+                    Craft::info('Registering GQL queries', __METHOD__);
+                    $queries = SearchQueries::getQueries();
+                    if (!empty($queries)) {
+                        foreach ($queries as $key => $value) {
+                            $event->queries[$key] = $value;
+                            Craft::info('Registered query: ' . $key, __METHOD__);
+                        }
+                    } else {
+                        Craft::warning('No queries returned from SearchQueries::getQueries()', __METHOD__);
+                    }
+                }
+            );
+
+            // Register GQL types
+            Event::on(
+                Gql::class,
+                Gql::EVENT_REGISTER_GQL_TYPES,
+                function(RegisterGqlTypesEvent $event) {
+                    Craft::info('Registering GQL types', __METHOD__);
+                    RegisterGqlTypes::registerTypes($event);
+                    Craft::info('GQL types registered', __METHOD__);
+                }
+            );
+
+            // Register Pro widgets
+            Event::on(
+                Dashboard::class,
+                Dashboard::EVENT_REGISTER_WIDGET_TYPES,
+                function (RegisterComponentTypesEvent $event) {
+                    $event->types[] = PopularSearchesWidget::class;
+                    $event->types[] = RecentSearchesWidget::class;
+                }
+            );
+        } else {
+            Craft::info('Plugin is not in PRO mode, skipping PRO features', __METHOD__);
+        }
 
         // Opt-in to garbage collection
         Event::on(
@@ -140,18 +171,6 @@ class SearchAssistant extends Plugin
                     HistoryRecord::tableName(),
                     'id',
                 );
-            }
-        );
-
-        // Register our widgets
-        Event::on(
-            Dashboard::class,
-            Dashboard::EVENT_REGISTER_WIDGET_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                if($this->is(self::EDITION_PRO)) {
-                    $event->types[] = PopularSearchesWidget::class;
-                    $event->types[] = RecentSearchesWidget::class;
-                }
             }
         );
 
@@ -188,14 +207,12 @@ class SearchAssistant extends Plugin
             }
         );
 
-        // Add Craft variables
+        // Register our variable
         Event::on(
             CraftVariable::class,
             CraftVariable::EVENT_DEFINE_BEHAVIORS,
-            function(DefineBehaviorsEvent $e) {
-                $e->sender->attachBehaviors([
-                    CraftVariableBehavior::class,
-                ]);
+            function(DefineBehaviorsEvent $event) {
+                $event->behaviors[] = CraftVariableBehavior::class;
             }
         );
 
@@ -247,7 +264,8 @@ class SearchAssistant extends Plugin
         return Craft::$app->view->renderTemplate(
             'search-assistant/settings',
             [
-                'settings' => $this->getSettings()
+                'settings' => $this->getSettings(),
+                'config' => Craft::$app->getConfig()->getConfigFromFile('search-assistant')
             ]
         );
     }
