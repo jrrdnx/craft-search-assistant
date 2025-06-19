@@ -1,6 +1,6 @@
 <?php
 
-namespace jrrdnx\searchassistant\helpers;
+namespace jrrdnx\searchassistant\gql\helpers;
 
 use jrrdnx\searchassistant\gql\GqlPermissions;
 
