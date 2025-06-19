@@ -152,37 +152,19 @@ class HistoryService extends Component
      */
     public function getPopularSearches(array $options = [])
     {
-        $sql = "
-            SELECT
-                `keywords`,
-                SUM(searchCount) AS `searchCount`
-            FROM
-                ".HistoryRecord::tableName()." AS `history`,
-                ".Table::ELEMENTS." AS `elements`
-            WHERE
-                `siteId` = ".Craft::$app->sites->getCurrentSite()->id."
-                AND
-                `history`.`id` = `elements`.`id`
-                AND
-                `elements`.`enabled` = 1
-        ";
+
+        $query = HistoryElement::find()
+            ->siteId(Craft::$app->sites->getCurrentSite()->id)
+            ->popularSearches(true)
+            ->numResults(true)
+            ->limit($options['limit'] ?? 5);
+
 
         if (!empty($options['pageUrl'])) {
-            $sql .= "AND `history`.`pageUrl` = '".explode('?', $options['pageUrl'])[0]."'";
+            $query->pageUrl(explode('?', $options['pageUrl'])[0]);
         }
 
-        $sql .= "
-                AND
-                `history`.`numResults` > 0
-            GROUP BY
-                `keywords`
-            ORDER BY
-                `searchCount` DESC
-            LIMIT
-                ".($options['limit'] ?? 5);
-
-        $query = Craft::$app->getDb()->createCommand()->setSql($sql);
-
-        return $query->queryAll();
+        return $query->all();
     }
+
 }
