@@ -13,6 +13,8 @@
  */
 #}
 
+{% set pluginName = pluginName ?? 'Search Assistant' %}
+
 {% requirePermission 'searchAssistant:viewFullHistory' %}
 
 {% extends "_layouts/elementindex" %}
