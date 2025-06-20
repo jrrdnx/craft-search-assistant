@@ -6,7 +6,7 @@ use jrrdnx\searchassistant\SearchAssistant;
 use jrrdnx\searchassistant\gql\types\elements\SearchType;
 use jrrdnx\searchassistant\gql\resolvers\elements\Search as SearchResolver;
 use jrrdnx\searchassistant\gql\GqlPermissions;
-use jrrdnx\searchassistant\helpers\Gql as GqlHelper;
+use jrrdnx\searchassistant\gql\helpers\Gql as GqlHelper;
 
 use Craft;
 use craft\gql\base\Query;

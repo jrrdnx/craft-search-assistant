@@ -3,7 +3,7 @@
 namespace jrrdnx\searchassistant\gql\resolvers\elements;
 
 use jrrdnx\searchassistant\elements\HistoryElement;
-use jrrdnx\searchassistant\helpers\Gql as GqlHelper;
+use jrrdnx\searchassistant\gql\helpers\Gql as GqlHelper;
 use jrrdnx\searchassistant\SearchAssistant;
 
 use craft\gql\base\ElementResolver;
