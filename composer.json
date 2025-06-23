@@ -2,7 +2,7 @@
     "name": "jrrdnx/craft-search-assistant",
     "description": "Track and manage your users' search history to find popular searches, recent searches, and more in Craft",
     "type": "craft-plugin",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "keywords": [
       "cms",
       "craftcms",

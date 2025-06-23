@@ -1,5 +1,12 @@
 # Release Notes for Search Assistant
 
+## 1.2.1 - 2025-06-22
+
+### Fixed
+- Fixes namespace ([#6](https://github.com/jrrdnx/craft-search-assistant/pull/6))
+- Removes duplicate file
+- Sets default plugin name in template ([#7](https://github.com/jrrdnx/craft-search-assistant/pull/7))
+
 ## 1.2.0 - 2025-05-31
 
 ### Added
