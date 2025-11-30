@@ -5,6 +5,7 @@
 ### Fixed
 - Resolve prepareFieldDefinitions() deprecation warnings ([#10](https://github.com/jrrdnx/craft-search-assistant/pull/10))
 - Split Db::upsert() logic to resolve database exception when using PostgreSQL ([#9](https://github.com/jrrdnx/craft-search-assistant/pull/9))
+- Restructure recent/popular search queries to resolve database exception when using PostgreSQL ([#9](https://github.com/jrrdnx/craft-search-assistant/pull/9))
 
 ### Updated
 - Cleanup logging, remove unused classes

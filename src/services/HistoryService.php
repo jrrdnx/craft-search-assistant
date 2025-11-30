@@ -15,6 +15,7 @@ use jrrdnx\searchassistant\records\HistoryRecord;
 
 use Craft;
 use craft\base\Component;
+use craft\db\Query;
 use craft\db\Table;
 use craft\helpers\Db;
 use craft\search\SearchQueryTermGroup;
@@ -113,38 +114,22 @@ class HistoryService extends Component
      */
     public function getRecentSearches(array $options = [])
     {
-        $sql = "
-            SELECT
-                `keywords`,
-                MAX(lastSearched) AS `lastSearched`
-            FROM
-                " . HistoryRecord::tableName() . " AS `history`,
-                " . Table::ELEMENTS . " AS `elements`
-            WHERE
-                `siteId` = " . Craft::$app->sites->getCurrentSite()->id . "
-                AND
-                `history`.`id` = `elements`.`id`
-                AND
-                `elements`.`enabled` = 1
-        ";
+        $query = (new Query())
+            ->select(['keywords', 'MAX([[history.lastSearched]]) AS lastSearched'])
+            ->from(['history' => HistoryRecord::tableName()])
+            ->innerJoin(Table::ELEMENTS . ' elements', '[[history.id]] = [[elements.id]]')
+            ->where(['siteId' => Craft::$app->sites->getCurrentSite()->id])
+            ->andWhere(['elements.enabled' => true])
+            ->andWhere(['>', 'history.numResults', 0])
+            ->groupBy(['keywords'])
+            ->orderBy(['lastSearched' => SORT_DESC])
+            ->limit($options['limit'] ?? 5);
 
         if (!empty($options['pageUrl'])) {
-            $sql .= "AND `history`.`pageUrl` = '" . explode('?', $options['pageUrl'])[0] . "'";
+            $query->andWhere(['history.pageUrl' => explode('?', $options['pageUrl'])[0]]);
         }
 
-        $sql .= "
-                AND
-                `history`.`numResults` > 0
-            GROUP BY
-                `keywords`
-            ORDER BY
-                `lastSearched` DESC
-            LIMIT
-                " . ($options['limit'] ?? 5);
-
-        $query = Craft::$app->getDb()->createCommand()->setSql($sql);
-
-        return $query->queryAll();
+        return $query->all();
     }
 
     /**
@@ -152,37 +137,21 @@ class HistoryService extends Component
      */
     public function getPopularSearches(array $options = [])
     {
-        $sql = "
-            SELECT
-                `keywords`,
-                SUM(searchCount) AS `searchCount`
-            FROM
-                " . HistoryRecord::tableName() . " AS `history`,
-                " . Table::ELEMENTS . " AS `elements`
-            WHERE
-                `siteId` = " . Craft::$app->sites->getCurrentSite()->id . "
-                AND
-                `history`.`id` = `elements`.`id`
-                AND
-                `elements`.`enabled` = 1
-        ";
+        $query = (new Query())
+            ->select(['keywords', 'SUM([[history.searchCount]]) AS searchCount'])
+            ->from(['history' => HistoryRecord::tableName()])
+            ->innerJoin(Table::ELEMENTS . ' elements', '[[history.id]] = [[elements.id]]')
+            ->where(['siteId' => Craft::$app->sites->getCurrentSite()->id])
+            ->andWhere(['elements.enabled' => true])
+            ->andWhere(['>', 'history.numResults', 0])
+            ->groupBy(['keywords'])
+            ->orderBy(['searchCount' => SORT_DESC])
+            ->limit($options['limit'] ?? 5);
 
         if (!empty($options['pageUrl'])) {
-            $sql .= "AND `history`.`pageUrl` = '" . explode('?', $options['pageUrl'])[0] . "'";
+            $query->andWhere(['history.pageUrl' => explode('?', $options['pageUrl'])[0]]);
         }
 
-        $sql .= "
-                AND
-                `history`.`numResults` > 0
-            GROUP BY
-                `keywords`
-            ORDER BY
-                `searchCount` DESC
-            LIMIT
-                " . ($options['limit'] ?? 5);
-
-        $query = Craft::$app->getDb()->createCommand()->setSql($sql);
-
-        return $query->queryAll();
+        return $query->all();
     }
 }
