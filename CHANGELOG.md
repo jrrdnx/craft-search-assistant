@@ -1,6 +1,6 @@
 # Release Notes for Search Assistant
 
-## Unreleased
+## 1.3.0
 
 ### Fixed
 - Resolve prepareFieldDefinitions() deprecation warnings ([#10](https://github.com/jrrdnx/craft-search-assistant/pull/10))
@@ -9,9 +9,9 @@
 - Ignore numResults when finding existing queries to update searchCount and lastSearched
 
 ### Updated
-- Cleanup logging, remove unused classes
 - Default `enabled` setting to true
 - Add `debugMode` setting to assist with troubleshooting
+- Cleanup logging, remove unused classes
 
 ## 1.2.1 - 2025-06-22
 
