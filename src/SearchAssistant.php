@@ -110,7 +110,7 @@ class SearchAssistant extends Plugin
 
         // Initialize Pro features
         if ($this->is(self::EDITION_PRO)) {
-            SearchAssistant::info('Initializing PRO features');
+            SearchAssistant::info('Initializing PRO edition features...');
 
             // Register GQL permissions first
             GqlPermissions::init();
@@ -155,7 +155,7 @@ class SearchAssistant extends Plugin
                 }
             );
         } else {
-            SearchAssistant::info('Plugin is not in PRO mode, skipping PRO features');
+            SearchAssistant::info('Using LITE edition...');
         }
 
         // Opt-in to garbage collection
@@ -273,7 +273,7 @@ class SearchAssistant extends Plugin
      */
     public static function info(string $message): void
     {
-        Craft::info($message, 'search-assistant');
+        SearchAssistant::getInstance()->getSettings()->getDebugMode() && Craft::info($message, 'search-assistant');
     }
 
     /**
@@ -281,7 +281,7 @@ class SearchAssistant extends Plugin
      */
     public static function warning(string $message): void
     {
-        Craft::warning($message, 'search-assistant');
+        SearchAssistant::getInstance()->getSettings()->getDebugMode() && Craft::warning($message, 'search-assistant');
     }
 
     /**
@@ -289,7 +289,7 @@ class SearchAssistant extends Plugin
      */
     public static function error(string $message): void
     {
-        Craft::error($message, 'search-assistant');
+        SearchAssistant::getInstance()->getSettings()->getDebugMode() && Craft::error($message, 'search-assistant');
     }
 
     /**

@@ -24,8 +24,17 @@
 	warning: (craft.app.config.getConfigFromFile('search-assistant')['enabled'] is defined ? 'overridden'|t('search-assistant', params = { name : 'enabled' }) : '')
 }) }}
 
-<div id="toggleSettings"{% if settings.enabled is not defined or not settings.enabled %} class="hidden"{% endif %}>
-    {{ forms.textField({
+<div id="toggleSettings" {% if settings.enabled is not defined or not settings.enabled %} class="hidden" {% endif %}>
+    {{ forms.lightswitchField({
+        label: 'debugMode'|t('search-assistant'),
+        instructions: 'debugModeInstructions'|t("search-assistant"),
+        id: 'debugMode',
+        name: 'debugMode',
+        on: settings.debugMode,
+        warning: (craft.app.config.getConfigFromFile('search-assistant')['debugMode'] is defined ? 'overridden'|t('search-assistant', params = { name : 'debugMode' }) : '')
+    }) }}
+
+	{{ forms.textField({
         label: 'pluginName'|t('search-assistant'),
         instructions: 'pluginNameInstructions'|t("search-assistant"),
         id: 'pluginName',
@@ -34,7 +43,7 @@
         warning: (craft.app.config.getConfigFromFile('search-assistant')['pluginName'] is defined ? 'overridden'|t('search-assistant', params = { name : 'pluginName' }) : '')
     }) }}
 
-    {{ forms.editableTableField({
+	{{ forms.editableTableField({
         label: 'ipIgnore'|t('search-assistant'),
         instructions: 'ipIgnoreInstructions'|t("search-assistant"),
         id: 'ipIgnore',
@@ -61,7 +70,7 @@
         warning: (craft.app.config.getConfigFromFile('search-assistant')['ipIgnore'] is defined ? 'overridden'|t('search-assistant', params = { name : 'ipIgnore' }) : '')
     }) }}
 
-    {{ forms.lightswitchField({
+	{{ forms.lightswitchField({
         label: 'ignoreCpUsers'|t('search-assistant'),
         instructions: 'ignoreCpUsersInstructions'|t('search-assistant'),
         id: 'ignoreCpUsers',
@@ -71,6 +80,6 @@
     }) }}
 </div>
 
-<br />
-<br />
-<br />
+<br/>
+<br/>
+<br/>

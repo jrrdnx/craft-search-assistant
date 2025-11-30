@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
  *
@@ -19,11 +20,13 @@
  * @since     1.0.0
  */
 return [
-	// Settings
+    // Settings
     'enabled'                                           => 'Enabled',
+    'debugMode'                                         => 'Debug Mode',
+    'debugModeInstructions'                             => 'Enables additional logging to assist with troubleshooting.',
     'pluginName'                                        => 'Plugin Name',
     'pluginNameInstructions'                            => 'The public-facing name of the plugin',
-	'ipIgnore'                                          => 'IP/CIDR Ignore List',
+    'ipIgnore'                                          => 'IP/CIDR Ignore List',
     'ipIgnoreInstructions'                              => 'Requests matching these IPs will not be tracked',
     'ipCidrAddress'                                     => 'IP/CIDR Address',
     'note'                                              => 'Note',

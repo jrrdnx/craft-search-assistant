@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
  *
@@ -21,11 +22,14 @@
  */
 
 return [
-/*******************************************************************************
- *	CONTROL PANEL
- ******************************************************************************/
+    /*******************************************************************************
+     *	CONTROL PANEL
+     ******************************************************************************/
     // Enable/disable search tracking and the control panel section
     'enabled' => true,
+
+    // Enable/disable debug mode
+    'debugMode' => false,
 
     // The public-facing name of the plugin
     'pluginName' => 'Search Assistant',

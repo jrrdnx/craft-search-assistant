@@ -10,6 +10,7 @@
 ### Updated
 - Cleanup logging, remove unused classes
 - Default `enabled` setting to true
+- Add `debugMode` setting to assist with troubleshooting
 
 ## 1.2.1 - 2025-06-22
 

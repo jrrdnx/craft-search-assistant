@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
  *
@@ -32,6 +33,11 @@ class SettingsModel extends Model
     public bool $enabled = true;
 
     /**
+     * @var bool
+     */
+    public bool $debugMode = false;
+
+    /**
      * @var string
      */
     public string $pluginName = 'Search Assistant';
@@ -47,17 +53,22 @@ class SettingsModel extends Model
     public bool $ignoreCpUsers = true;
 
     // Public Methods
-	// =========================================================================
+    // =========================================================================
 
-	public function getEnabled(): string
+    public function getEnabled(): string
     {
         return App::parseEnv($this->enabled);
-	}
+    }
+
+    public function getDebugMode(): string
+    {
+        return App::parseEnv($this->debugMode);
+    }
 
     public function getPluginName(): string
     {
         return App::parseEnv($this->pluginName);
-	}
+    }
 
     public function getIgnoreCpUsers(): bool
     {
@@ -68,6 +79,7 @@ class SettingsModel extends Model
     {
         return [
             'enabled',
+            'debugMode',
             'pluginName',
             'ipIgnore'
         ];
@@ -78,7 +90,7 @@ class SettingsModel extends Model
         return [
             'parser' => [
                 'class' => EnvAttributeParserBehavior::class,
-                'attributes' => ['enabled', 'pluginName'],
+                'attributes' => ['enabled', 'debugMode', 'pluginName'],
             ],
         ];
     }
@@ -91,7 +103,9 @@ class SettingsModel extends Model
         $rules = parent::rules();
 
         $rules[] = [['enabled'], 'boolean'];
-		$rules[] = [['enabled'], 'default', 'value' => false];
+        $rules[] = [['enabled'], 'default', 'value' => true];
+        $rules[] = [['debugMode'], 'boolean'];
+        $rules[] = [['debugMode'], 'default', 'value' => false];
         $rules[] = [['ipIgnore'], 'validateIpCidr'];
         $rules[] = [['ipIgnore'], 'default', 'value' => [
             ['::1', 'IPv6 localhost'],
