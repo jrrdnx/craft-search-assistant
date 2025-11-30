@@ -8,7 +8,6 @@ use jrrdnx\searchassistant\gql\resolvers\elements\Search as SearchResolver;
 use jrrdnx\searchassistant\gql\GqlPermissions;
 use jrrdnx\searchassistant\gql\helpers\Gql as GqlHelper;
 
-use Craft;
 use craft\gql\base\Query;
 use GraphQL\Type\Definition\Type;
 
@@ -17,16 +16,16 @@ class SearchQueries extends Query
     public static function getQueries($checkToken = true): array
     {
         // Log that we're attempting to register queries
-        Craft::info('SearchQueries::getQueries() called', __METHOD__);
+        SearchAssistant::info('SearchQueries::getQueries() called');
 
         // Only register queries if we're in PRO mode and the plugin is enabled
         if (!SearchAssistant::getInstance()->is(SearchAssistant::EDITION_PRO)) {
-            Craft::info('Plugin is not in PRO mode', __METHOD__);
+            SearchAssistant::info('Plugin is not in PRO mode');
             return [];
         }
 
         if (!SearchAssistant::getInstance()->getSettings()->getEnabled()) {
-            Craft::info('Plugin is not enabled', __METHOD__);
+            SearchAssistant::info('Plugin is not enabled');
             return [];
         }
 
@@ -34,7 +33,7 @@ class SearchQueries extends Query
 
         // Regular searches
         if (!$checkToken || GqlHelper::canQuerySearches()) {
-            Craft::info('Registering searches query', __METHOD__);
+            SearchAssistant::info('Registering searches query');
             $queries['searches'] = [
                 'type' => Type::listOf(SearchType::getType()),
                 'args' => [
@@ -77,7 +76,7 @@ class SearchQueries extends Query
 
         // Popular searches
         if (!$checkToken || GqlHelper::canQueryPopularSearches()) {
-            Craft::info('Registering popularSearches query', __METHOD__);
+            SearchAssistant::info('Registering popularSearches query');
             $queries['popularSearches'] = [
                 'type' => Type::listOf(SearchType::getType()),
                 'args' => [
@@ -105,7 +104,7 @@ class SearchQueries extends Query
 
         // Recent searches
         if (!$checkToken || GqlHelper::canQueryRecentSearches()) {
-            Craft::info('Registering recentSearches query', __METHOD__);
+            SearchAssistant::info('Registering recentSearches query');
             $queries['recentSearches'] = [
                 'type' => Type::listOf(SearchType::getType()),
                 'args' => [
@@ -131,7 +130,7 @@ class SearchQueries extends Query
             ];
         }
 
-        Craft::info('Returning queries: ' . print_r(array_keys($queries), true), __METHOD__);
+        SearchAssistant::info('Returning queries: ' . print_r(array_keys($queries), true));
         return $queries;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
  *
@@ -16,7 +17,6 @@ use Craft;
 use craft\base\Component;
 use craft\db\Table;
 use craft\helpers\Db;
-use craft\search\SearchQueryTerm;
 use craft\search\SearchQueryTermGroup;
 use DateTime;
 use Dxw\CIDR\IP;
@@ -36,31 +36,31 @@ class HistoryService extends Component
     public function track($event): void
     {
         // Don't track if disabled
-        if(!SearchAssistant::$plugin->getSettings()->getEnabled()) {
+        if (!SearchAssistant::$plugin->getSettings()->getEnabled()) {
             return;
         }
 
         // Only track front-end requests
-        if(!Craft::$app->request->getIsSiteRequest()) {
+        if (!Craft::$app->request->getIsSiteRequest()) {
             return;
         }
 
         // Don't track if in IP ignore list
-        if(self::checkIp(Craft::$app->getRequest()->getRemoteIP())) {
+        if (self::checkIp(Craft::$app->getRequest()->getRemoteIP())) {
             return;
         }
 
         // Don't track if current user is logged in to control panel
-        if(SearchAssistant::$plugin->getSettings()->getIgnoreCpUsers() && Craft::$app->getUser()->checkPermission('accessCp')) {
+        if (SearchAssistant::$plugin->getSettings()->getIgnoreCpUsers() && Craft::$app->getUser()->checkPermission('accessCp')) {
             return;
         }
 
         // Make sure we get the full search term and just the search term
         $keywords = $event->query->getQuery();
-        foreach($event->query->getTokens() as $token) {
-            if($token instanceof SearchQueryTermGroup) {
-                foreach($token->terms as $term) {
-                    if($term->phrase) {
+        foreach ($event->query->getTokens() as $token) {
+            if ($token instanceof SearchQueryTermGroup) {
+                foreach ($token->terms as $term) {
+                    if ($term->phrase) {
                         $keywords = $term->term;
                     }
                 }
@@ -73,7 +73,7 @@ class HistoryService extends Component
             ->keywords($keywords)
             ->one();
 
-        if(!$search) {
+        if (!$search) {
             $search = new HistoryElement([
                 'siteId' => (int)Craft::$app->sites->getCurrentSite()->id,
                 'pageUrl' => (string)explode('?', Craft::$app->getRequest()->getUrl())[0],
@@ -96,7 +96,7 @@ class HistoryService extends Component
      */
     public static function checkIp($userIp): bool
     {
-        foreach(SearchAssistant::$plugin->getSettings()->ipIgnore as $ipCidr) {
+        foreach (SearchAssistant::$plugin->getSettings()->ipIgnore as $ipCidr) {
             $result = IP::contains($ipCidr[0], $userIp);
             $match = $result->unwrap();
 
@@ -118,10 +118,10 @@ class HistoryService extends Component
                 `keywords`,
                 MAX(lastSearched) AS `lastSearched`
             FROM
-                ".HistoryRecord::tableName()." AS `history`,
-                ".Table::ELEMENTS." AS `elements`
+                " . HistoryRecord::tableName() . " AS `history`,
+                " . Table::ELEMENTS . " AS `elements`
             WHERE
-                `siteId` = ".Craft::$app->sites->getCurrentSite()->id."
+                `siteId` = " . Craft::$app->sites->getCurrentSite()->id . "
                 AND
                 `history`.`id` = `elements`.`id`
                 AND
@@ -129,7 +129,7 @@ class HistoryService extends Component
         ";
 
         if (!empty($options['pageUrl'])) {
-            $sql .= "AND `history`.`pageUrl` = '".explode('?', $options['pageUrl'])[0]."'";
+            $sql .= "AND `history`.`pageUrl` = '" . explode('?', $options['pageUrl'])[0] . "'";
         }
 
         $sql .= "
@@ -140,7 +140,7 @@ class HistoryService extends Component
             ORDER BY
                 `lastSearched` DESC
             LIMIT
-                ".($options['limit'] ?? 5);
+                " . ($options['limit'] ?? 5);
 
         $query = Craft::$app->getDb()->createCommand()->setSql($sql);
 
@@ -157,10 +157,10 @@ class HistoryService extends Component
                 `keywords`,
                 SUM(searchCount) AS `searchCount`
             FROM
-                ".HistoryRecord::tableName()." AS `history`,
-                ".Table::ELEMENTS." AS `elements`
+                " . HistoryRecord::tableName() . " AS `history`,
+                " . Table::ELEMENTS . " AS `elements`
             WHERE
-                `siteId` = ".Craft::$app->sites->getCurrentSite()->id."
+                `siteId` = " . Craft::$app->sites->getCurrentSite()->id . "
                 AND
                 `history`.`id` = `elements`.`id`
                 AND
@@ -168,7 +168,7 @@ class HistoryService extends Component
         ";
 
         if (!empty($options['pageUrl'])) {
-            $sql .= "AND `history`.`pageUrl` = '".explode('?', $options['pageUrl'])[0]."'";
+            $sql .= "AND `history`.`pageUrl` = '" . explode('?', $options['pageUrl'])[0] . "'";
         }
 
         $sql .= "
@@ -179,7 +179,7 @@ class HistoryService extends Component
             ORDER BY
                 `searchCount` DESC
             LIMIT
-                ".($options['limit'] ?? 5);
+                " . ($options['limit'] ?? 5);
 
         $query = Craft::$app->getDb()->createCommand()->setSql($sql);
 
