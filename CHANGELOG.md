@@ -1,5 +1,10 @@
 # Release Notes for Search Assistant
 
+## Unreleased
+
+### Fixed
+- Resolve prepareFieldDefinitions() deprecation warnings ([#10](https://github.com/jrrdnx/craft-search-assistant/pull/10))
+
 ## 1.2.1 - 2025-06-22
 
 ### Fixed

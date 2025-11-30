@@ -5,9 +5,9 @@ namespace jrrdnx\searchassistant\gql\interfaces\elements;
 use jrrdnx\searchassistant\elements\HistoryElement;
 use jrrdnx\searchassistant\gql\types\elements\Search as SearchType;
 
+use Craft;
 use craft\gql\GqlEntityRegistry;
 use craft\gql\interfaces\Element;
-use craft\gql\TypeManager;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InterfaceType;
 
@@ -42,7 +42,7 @@ class Search extends Element
             'name' => $typeName,
             'fields' => $fields,
             'description' => 'This is the interface implemented by all Searches.',
-            'resolveType' => function($value) {
+            'resolveType' => function ($value) {
                 if ($value instanceof HistoryElement) {
                     return SearchType::getType();
                 }
@@ -83,6 +83,6 @@ class Search extends Element
             ],
         ]);
 
-        return TypeManager::prepareFieldDefinitions($fields, self::getName());
+        return Craft::$app->getGql()->prepareFieldDefinitions($fields, self::getName());
     }
 }
