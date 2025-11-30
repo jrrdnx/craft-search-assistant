@@ -29,7 +29,7 @@ class SettingsModel extends Model
     /**
      * @var bool
      */
-    public bool $enabled = false;
+    public bool $enabled = true;
 
     /**
      * @var string
@@ -40,8 +40,8 @@ class SettingsModel extends Model
      *
      */
     public array $ipIgnore = [
-        [ '::1', 'IPv6 localhost' ],
-        [ '127.0.0.1', 'IPv4 localhost' ]
+        ['::1', 'IPv6 localhost'],
+        ['127.0.0.1', 'IPv4 localhost']
     ];
 
     public bool $ignoreCpUsers = true;
@@ -94,8 +94,8 @@ class SettingsModel extends Model
 		$rules[] = [['enabled'], 'default', 'value' => false];
         $rules[] = [['ipIgnore'], 'validateIpCidr'];
         $rules[] = [['ipIgnore'], 'default', 'value' => [
-            [ '::1', 'IPv6 localhost' ],
-            [ '127.0.0.1', 'IPv4 localhost' ]
+            ['::1', 'IPv6 localhost'],
+            ['127.0.0.1', 'IPv4 localhost']
         ]];
 
         return $rules;
@@ -106,7 +106,7 @@ class SettingsModel extends Model
      */
     public function validateIpCidr($attribute)
     {
-        foreach($this->$attribute as &$row) {
+        foreach ($this->$attribute as &$row) {
             $result = IPRange::Make($row[0]);
             if ($result->isErr()) {
                 $row[0] = ['value' => $row[0], 'hasErrors' => true];

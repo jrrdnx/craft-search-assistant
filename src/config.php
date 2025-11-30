@@ -25,15 +25,15 @@ return [
  *	CONTROL PANEL
  ******************************************************************************/
     // Enable/disable search tracking and the control panel section
-    'enabled' => false,
+    'enabled' => true,
 
     // The public-facing name of the plugin
     'pluginName' => 'Search Assistant',
 
     // IP/CIDR ignore list, requests matching these IPs will not be tracked
     'ipIgnore' => [
-        [ '::1', 'IPv6 localhost' ],
-        [ '127.0.0.1', 'IPv4 localhost' ]
+        ['::1', 'IPv6 localhost'],
+        ['127.0.0.1', 'IPv4 localhost']
     ],
 
     // If true, will not track searches performed by users who are currently logged in to the control panel

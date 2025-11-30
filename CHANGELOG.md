@@ -9,6 +9,7 @@
 
 ### Updated
 - Cleanup logging, remove unused classes
+- Default `enabled` setting to true
 
 ## 1.2.1 - 2025-06-22
 
