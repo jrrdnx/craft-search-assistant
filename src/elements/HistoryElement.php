@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
  *
@@ -86,28 +87,34 @@ class HistoryElement extends Element
     public function afterSave(bool $isNew): void
     {
         if (!$this->propagating) {
-            Db::upsert(HistoryRecord::tableName(), [
-                'id' => $this->id,
-                'siteId' => $this->siteId,
-                'pageUrl' => $this->pageUrl,
-                'keywords' => $this->keywords,
-                'numResults' => $this->numResults,
-                'searchCount' => $this->searchCount,
-                'lastSearched' => $this->lastSearched
-            ], [
-                'siteId' => $this->siteId,
-                'pageUrl' => $this->pageUrl,
-                'keywords' => $this->keywords,
-                'numResults' => $this->numResults,
-                'searchCount' => $this->searchCount,
-                'lastSearched' => $this->lastSearched
-            ]);
+            if ($isNew) {
+                Db::insert(HistoryRecord::tableName(), [
+                    'id' => $this->id,
+                    'siteId' => $this->siteId,
+                    'pageUrl' => $this->pageUrl,
+                    'keywords' => $this->keywords,
+                    'numResults' => $this->numResults,
+                    'searchCount' => $this->searchCount,
+                    'lastSearched' => $this->lastSearched,
+                ]);
+            } else {
+                Db::update(HistoryRecord::tableName(), [
+                    'siteId' => $this->siteId,
+                    'pageUrl' => $this->pageUrl,
+                    'keywords' => $this->keywords,
+                    'numResults' => $this->numResults,
+                    'searchCount' => $this->searchCount,
+                    'lastSearched' => $this->lastSearched,
+                ], [
+                    'id' => $this->id
+                ]);
+            }
         }
 
         parent::afterSave($isNew);
     }
 
-    protected static function defineSources(string $context = null): array
+    protected static function defineSources(?string $context = null): array
     {
         return [
             [
@@ -174,7 +181,7 @@ class HistoryElement extends Element
         ];
     }
 
-    protected static function defineActions(string $source = null): array
+    protected static function defineActions(?string $source = null): array
     {
         return [
             Restore::class,
@@ -184,7 +191,7 @@ class HistoryElement extends Element
 
     public function canView(User $user): bool
     {
-        if($user->can('searchAssistant:viewFullHistory')) {
+        if ($user->can('searchAssistant:viewFullHistory')) {
             return true;
         }
 
@@ -193,7 +200,7 @@ class HistoryElement extends Element
 
     public function canSave(User $user): bool
     {
-        if($user->can('searchAssistant:canChangeStatus')) {
+        if ($user->can('searchAssistant:canChangeStatus')) {
             return true;
         }
 
@@ -202,7 +209,7 @@ class HistoryElement extends Element
 
     public function canDelete(User $user): bool
     {
-        if($user->can('searchAssistant:canDelete')) {
+        if ($user->can('searchAssistant:canDelete')) {
             return true;
         }
 
