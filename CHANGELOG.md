@@ -1,5 +1,10 @@
 # Release Notes for Search Assistant
 
+## 1.3.1
+
+### Fixed
+- Resolve GROUP BY error with Popular Searches ([#9](https://github.com/jrrdnx/craft-search-assistant/pull/9))
+
 ## 1.3.0
 
 ### Fixed

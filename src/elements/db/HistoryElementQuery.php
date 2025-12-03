@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Track and manage your users' search history to find popular searches, recent searches, and more in Craft
  *
@@ -10,6 +11,8 @@ namespace jrrdnx\searchassistant\elements\db;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craft\db\Query;
+use yii\db\Expression;
 
 /**
  * History Element Query
@@ -93,23 +96,32 @@ class HistoryElementQuery extends ElementQuery
 
         if ($this->popularSearches) {
             // For popular searches, we need to group and aggregate
-            $this->query->select([
-                $table.'.keywords',
-                'SUM('.$table.'.searchCount) as searchCount',
-                'MAX('.$table.'.lastSearched) as lastSearched',
-                'MAX('.$table.'.pageUrl) as pageUrl',
-                'MAX('.$table.'.numResults) as numResults'
-            ])
-            ->groupBy([$table.'.keywords'])
-            ->orderBy(['searchCount' => SORT_DESC]);
+            // We set $this->select to ensure ElementQuery doesn't add conflicting columns
+            $this->select = [
+                $table . '.keywords',
+                'SUM([[' . $table . '.searchCount]]) as [[searchCount]]',
+                'MAX([[' . $table . '.lastSearched]]) as [[lastSearched]]',
+                'MAX([[' . $table . '.pageUrl]]) as [[pageUrl]]',
+                'MAX([[' . $table . '.numResults]]) as [[numResults]]',
+                // Aggregate standard Element columns to satisfy GROUP BY
+                'MAX([[elements.id]]) as [[id]]',
+                'MAX([[elements.dateCreated]]) as [[dateCreated]]',
+                'MAX([[elements.dateUpdated]]) as [[dateUpdated]]',
+                'MAX([[elements.uid]]) as [[uid]]',
+                'MAX(CASE WHEN [[elements.enabled]] THEN 1 ELSE 0 END) as [[enabled]]'
+            ];
+
+            $this->query
+                ->groupBy([$table . '.keywords'])
+                ->orderBy([new Expression('[[searchCount]] DESC')]);
         } else {
             // For other queries, select all fields normally
             $this->query->select([
-                $table.'.pageUrl',
-                $table.'.keywords',
-                $table.'.numResults',
-                $table.'.searchCount',
-                $table.'.lastSearched'
+                $table . '.pageUrl',
+                $table . '.keywords',
+                $table . '.numResults',
+                $table . '.searchCount',
+                $table . '.lastSearched'
             ]);
 
             if ($this->recentSearches) {
@@ -120,25 +132,27 @@ class HistoryElementQuery extends ElementQuery
         }
 
         if ($this->siteId) {
-            $this->subQuery->andWhere(Db::parseParam($table.'.siteId', $this->siteId));
+            $this->subQuery->andWhere(Db::parseParam($table . '.siteId', $this->siteId));
         }
 
         if ($this->pageUrl) {
-            $this->subQuery->andWhere(Db::parseParam($table.'.pageUrl', $this->pageUrl));
+            $this->subQuery->andWhere(Db::parseParam($table . '.pageUrl', $this->pageUrl));
         }
 
         if ($this->keywords) {
-            $this->subQuery->andWhere(Db::parseParam($table.'.keywords', $this->keywords));
+            $this->subQuery->andWhere(Db::parseParam($table . '.keywords', $this->keywords));
         }
 
         if ($this->numResults) {
             $this->subQuery->andWhere([
-                '>', 'numResults', 0
+                '>',
+                'numResults',
+                0
             ]);
         }
 
         if ($this->searchCount) {
-            $this->subQuery->andWhere(Db::parseParam($table.'.searchCount', $this->searchCount));
+            $this->subQuery->andWhere(Db::parseParam($table . '.searchCount', $this->searchCount));
         }
 
         return parent::beforePrepare();
