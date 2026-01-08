@@ -70,6 +70,7 @@ class HistoryService extends Component
 
         $search = HistoryElement::find()
             ->numResults(false)
+            ->status(null)
             ->siteId(Craft::$app->sites->getCurrentSite()->id)
             ->pageUrl(explode('?', Craft::$app->getRequest()->getUrl())[0])
             ->keywords($keywords)
