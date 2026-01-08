@@ -24,19 +24,24 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\DefineBehaviorsEvent;
+use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterGqlQueriesEvent;
 use craft\events\RegisterGqlTypesEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\SearchEvent;
+use craft\helpers\UrlHelper;
 use craft\log\MonologTarget;
 use craft\services\Dashboard;
 use craft\services\Elements;
 use craft\services\Gc;
 use craft\services\Gql;
+use craft\services\Plugins;
 use craft\services\Search;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
+use craft\web\UrlManager;
 use Monolog\Formatter\LineFormatter;
 use Psr\Log\LogLevel;
 use yii\base\Event;
@@ -98,6 +103,32 @@ class SearchAssistant extends Plugin
         $this->setComponents([
             'history' => HistoryService::class,
         ]);
+
+        // Redirect to plugin settings after we're installed
+        Event::on(
+            Plugins::class,
+            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
+            function (PluginEvent $event) {
+                if ($event->plugin === $this) {
+                    if(!Craft::$app->getRequest()->getIsConsoleRequest()) {
+                        Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('settings/plugins/search-assistant'))->send();
+                    }
+                }
+            }
+        );
+
+        // Register our CP routes
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                if($this->is(self::EDITION_PRO)) {
+                    $event->rules['search-assistant'] = 'search-assistant/history/index';
+                } else {
+                    $event->rules['search-assistant'] = 'search-assistant/history/pro-version-required';
+                }
+            }
+        );
 
         // Register our elements
         Event::on(
