@@ -1,5 +1,11 @@
 # Release Notes for Search Assistant
 
+## 1.3.2
+
+### Fixed
+- Adds back missing event listeners
+- Fixes integrity constraint violation when searches are performed for disabled keywords ([#11](https://github.com/jrrdnx/craft-search-assistant/issues/11))
+
 ## 1.3.1
 
 ### Fixed
