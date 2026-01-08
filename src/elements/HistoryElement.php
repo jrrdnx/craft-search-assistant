@@ -70,7 +70,7 @@ class HistoryElement extends Element
     public function getSupportedSites(): array
     {
         return [
-            Craft::$app->sites->getCurrentSite()->id
+            $this->siteId
         ];
     }
 
