@@ -114,6 +114,17 @@ class HistoryElement extends Element
         parent::afterSave($isNew);
     }
 
+    public function afterDelete(): void
+    {
+        if (!$this->propagating) {
+            Db::delete(HistoryRecord::tableName(), [
+                'id' => $this->id
+            ]);
+        }
+
+        parent::afterDelete();
+    }
+
     protected static function defineSources(?string $context = null): array
     {
         return [
