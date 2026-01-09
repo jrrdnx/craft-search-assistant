@@ -1,5 +1,11 @@
 # Release Notes for Search Assistant
 
+## 1.3.3
+
+### Fixed
+- Fixes issue where keywords were not being deleted correctly ([#13](https://github.com/jrrdnx/craft-search-assistant/issues/13))
+- Fixes issue preventing keywords from being disabled on non-primary sites ([#12](https://github.com/jrrdnx/craft-search-assistant/issues/12))
+
 ## 1.3.2
 
 ### Fixed
